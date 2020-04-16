@@ -17,7 +17,7 @@ To permanently delete files (traditional behavior) use the flag `-D`.
 | help | not yet | --- |
 
 ## Installation
-The installation simply copies the script in `\usr\local\bin` and creates an alias to it.
+The installation simply copies the script in `/usr/local/bin` and creates an alias to it.
 ```bash
 bash install.sh
 source ~/.bashrc

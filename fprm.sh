@@ -6,8 +6,7 @@ usage() {
 Usage: rm [OPTION]... [FILE]...
 Remove (safely move to trash) the FILE(s).
 
--f      [NOT IMPLEMENTED] ignore nonexistent files and arguments, never prompt
--v      verbose (for debugging)
+-f      ignore nonexistent files and arguments, never prompt
 -r      remove directories and their contents recursively
 -D      remove forever
 EOF
