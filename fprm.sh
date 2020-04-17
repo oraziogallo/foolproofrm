@@ -1,5 +1,5 @@
 #!/bin/bash
-TRASH_DIR="/home/"$USER"/.trash_foolproof_rm/"
+TRASH_DIR="/home/"$USER"/.trash_foolproofrm"
 
 usage() {
   cat << EOF >&2
@@ -8,6 +8,7 @@ Remove (safely move to trash) the FILE(s).
 
 -f      ignore nonexistent files and arguments, never prompt
 -r      remove directories and their contents recursively
+-v      verbose
 -D      remove forever
 EOF
   exit 1
@@ -35,6 +36,11 @@ done
 shift "$((OPTIND - 1))"
 file="$@"
 
+if [[ $# -eq 0 ]]; then
+  echo "Missing operand"
+  usage
+fi
+
 # If the feared -D argument was passed, just call rm
 if [[ $remove ]]; then
   /bin/rm -rf "$@"
@@ -42,32 +48,46 @@ if [[ $remove ]]; then
 fi
 
 for file; do
-  out_file_name="$TRASH_DIR/$now-$file"
-  if [[ -f $file ]]
-  then
-    if [[ -w $file || $force ]]; then
+  # Properly handle spaces?
+  # file=${file// /$'\ '}
+  
+  # Target filename:
+  # prepend date and flatten 
+  out_file="$TRASH_DIR/$now-${file////$'__'}"
+
+  # Files
+  if [[ -f "$file" ]]; then
+    if [[ -w "$file" || $force ]]; then
       go_ahead=1
     else
-      read -p "rm: remove write-protected regular file '$file'? " answer
+      read -p "rm: remove write-protected regular file '${file}'? " answer
       case ${answer:0:1} in
           y|Y) go_ahead=1;;
       esac
     fi
     if [[ $go_ahead ]]; then
-      mv $file $out_file_name
+      if [[ $verbose ]]; then
+        echo "Moving $file -> $out_file"
+      fi
+      mv -- "$file" "$out_file"
     fi
   fi
-  if [[ -d $file ]]
-  then
-    if [[ ! $recursive ]]
-    then 
-      echo "rm: cannot remove '$file': Is a directory"
+
+  # Directories
+  if [[ -d "$file" ]]; then 
+    if [[ ! $recursive ]]; then 
+      echo "rm: cannot remove '${file}': Is a directory"
     else
-      mv $file $out_file_name
+      if [[ $verbose ]]; then
+        echo "Moving $file/ -> $out_file"
+      fi
+      mv -- "$file" "$out_file"
     fi
   fi
+
 done
 
+exit 0
 
 # Getops from the getops manual:
 # https://pubs.opengroup.org/onlinepubs/9699919799/utilities/getopts.html
