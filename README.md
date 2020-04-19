@@ -7,15 +7,16 @@ To permanently delete files (traditional, dangerous behavior) use the flag `-D`.
 The standard `rm` command can still be run using the fully qualified path (generally `\bin\rm`).
 
 ### Supported flags
-| Flag | Supported | Comments|
+| Flag | Supported/New | Comments|
 | :---:|  :---:    |  :---:  |
-| D | yes | Behave as traditional `rm` |
-| r | yes | --- |
-| f | partial | Don't prompt for read-only files |
-| i | not yet | --- |
-| v | yes | --- |
-| version | not yet | --- |
-| help | not yet | --- |
+| -D | New | Behave as exactly as traditional `rm` |
+| -E | New | Empty trash |
+| -r | Yes | --- |
+| -f | Partial | Don't prompt for read-only files |
+| -h | Yes | --- |
+| -v | Yes | --- |
+| -i | Not yet | --- |
+| --version | Not yet | --- |
 
 ## Installation
 The installation simply creates an alias to the script that "shadows" `rm`.

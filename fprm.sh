@@ -1,5 +1,6 @@
 #!/bin/bash
 TRASH_DIR="/home/"$USER"/.trash_foolproofrm"
+VERSION="0.1"
 
 usage() {
   cat << EOF >&2
@@ -10,8 +11,31 @@ Remove (safely move to trash) the FILE(s).
 -r      remove directories and their contents recursively
 -v      verbose
 -D      remove forever
+-E      empty trash
+
+foolproofrm v$VERSION
 EOF
   exit 1
+}
+
+clear_trash() {
+  if [[ -d "$TRASH_DIR" ]]; then
+    go_ahead=1
+    if [[ ! "$force" ]]; then
+      read -p "Permanently empty the trash folder? " answer
+      case ${answer:0:1} in
+          y|Y) go_ahead=1;;
+          *) go_ahead=0;;
+      esac
+    fi
+    if [[ $go_ahead -eq 1 ]]; then
+      /bin/rm -rf "$TRASH_DIR"/*
+    fi
+    exit 0
+  else
+    echo "Trash directory not found."
+    exit 1
+  fi
 }
 
 now=$(date +'%F-%T')
@@ -23,14 +47,15 @@ then
 fi
 
 # Parse the inputs
-while getopts fvrD o
+while getopts fvrhTD o
 do
   case $o in
     f) force=1;;
     v) verbose=1;;
     r) recursive=1;;
     D) remove=1;;
-    *) usage
+    E) clear_trash;;
+    h|*) usage;;
   esac
 done
 shift "$((OPTIND - 1))"
@@ -63,9 +88,10 @@ for file; do
       read -p "rm: remove write-protected regular file '${file}'? " answer
       case ${answer:0:1} in
           y|Y) go_ahead=1;;
+          *) go_ahead=0;;
       esac
     fi
-    if [[ $go_ahead ]]; then
+    if [[ $go_ahead -eq 1 ]]; then
       if [[ $verbose ]]; then
         echo "Moving $file -> $out_file"
       fi
