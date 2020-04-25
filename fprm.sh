@@ -10,6 +10,7 @@ Remove (safely move to trash) the FILE(s).
 -f      ignore nonexistent files and arguments, never prompt
 -r      remove directories and their contents recursively
 -v      verbose
+-h      show this message
 -D      remove forever
 -E      empty trash
 
@@ -47,7 +48,7 @@ then
 fi
 
 # Parse the inputs
-while getopts fvrhTD o
+while getopts fvrhTDE o
 do
   case $o in
     f) force=1;;
@@ -75,6 +76,12 @@ fi
 for file; do
   # Properly handle spaces?
   # file=${file// /$'\ '}
+
+  # Do not delete the trash folder
+  if [[ "${file%/}" == "$TRASH_DIR" ]]; then
+    echo "Cannot remove the trash folder itself. (-D to force)"
+    exit 1
+  fi
   
   # Target filename:
   # prepend date and flatten 
