@@ -66,7 +66,7 @@ then
 fi
 
 # Parse the inputs
-flags="-"
+flags=""
 while getopts fvrhTDE o
 do
   case $o in
@@ -89,6 +89,9 @@ fi
 
 # If the feared -D argument was passed, just call rm
 if [[ $remove ]]; then
+  if [[ ${#flags} -gt 0 ]]; then
+    flags="-"$flags
+  fi
   eval "/bin/rm $flags $@"
   exit $?
 fi
