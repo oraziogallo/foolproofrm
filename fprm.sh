@@ -18,10 +18,23 @@
 # WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
 # IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-TRASH_DIR="/home/"$USER"/.trash_foolproofrm"
+# Determine the operating system and set the trash accordingly
+OS=$(uname -s)
+
+if [[ "$OS" == "Linux" ]]; then
+  TRASH_DIR="/home/"$USER"/.trash_foolproofrm"
+elif [[ "$OS" == "Darwin" ]]; then
+  TRASH_DIR="/Users/"$USER"/.trash_foolproofrm"
+else
+  echo "Operating system not supported."
+fi
+
+
 VERSION="0.2"
 
 usage() {
+FOLDER_SIZE_BYTES=$(du -sk "$TRASH_DIR" | awk '{print $1}')
+FOLDER_SIZE_MB=$((FOLDER_SIZE_BYTES / 1024))
   cat << EOF >&2
 Usage: rm [OPTION]... [FILE]...
 Remove (safely move to trash) the FILE(s).
@@ -32,6 +45,8 @@ Remove (safely move to trash) the FILE(s).
 -h      show this message
 -D      remove forever
 -E      empty trash
+
+Trash folder: $TRASH_DIR ($FOLDER_SIZE_MB MB)
 
 foolproofrm v$VERSION
 EOF
